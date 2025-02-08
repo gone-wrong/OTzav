@@ -19,19 +19,34 @@ class Fire(Element):
     def __init__(self):
         super().__init__()
 
-    def burn_character(self, character):
-        pass
+    def attack_character(self, character):
+        super().damage_character(character)
+        character.apply_element(self)
 
-    def explode_character(self, character):
-        pass
+
+class Earth(Element):
+    def __init__(self):
+        super().__init__()
 
     def attack_character(self, character):
         super().damage_character(character)
-        if character.applied_element == "Earth":
-            self.burn_character(character)
-        elif character.applied_element == "Lightning":
-            self.explode_character(character)
-        else:
-            character.applied_element = "Fire"
+        character.apply_element(self)
 
+
+class Water(Element):
+    def __init__(self):
+        super().__init__()
+
+    def attack_character(self, character):
+        super().damage_character(character)
+        character.apply_element(self)
+
+
+class Lightning(Element):
+    def __init__(self):
+        super().__init__()
+
+    def attack_character(self, character):
+        super().damage_character(character)
+        character.apply_element(self)
 
