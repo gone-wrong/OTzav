@@ -16,8 +16,9 @@ running = True
 player = Player(health=100, level=1)
 enemy = Enemy(health=80, level=1)
 
-# Generate cards
-cards = spawn_cards(20)
+# Generate cards with same probabilities at start
+probabilities = {'F': 1, 'E': 1, 'L': 1, 'W': 1}
+cards = spawn_cards(20, player, probabilities)
 
 # Button Click Functions
 def button_fire_action():

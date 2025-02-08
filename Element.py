@@ -7,11 +7,20 @@ class Element:
     def __init__(self, level=1):
         self.level = level # default 1
         self.damage = 5 # default 5
+        self.temp_level = 0
 
 
     def damage_character(self, character):
-        damage_dealt = self.damage * self.level
+        damage_dealt = self.damage * (self.level + self.temp_level)
         character.take_damage(damage_dealt)
+
+
+    def increase_temp_level(self):
+        self.temp_level += 1
+
+
+    def reset_temp_level(self):
+        self.temp_level = 0
 
 
 
