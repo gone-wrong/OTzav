@@ -1,12 +1,14 @@
 from Character import Character
 from HealthBar import HealthBar
+from Figure import Figure
+
 
 class Player(Character):
     def __init__(self, health=100, level=1):
         super().__init__(health, level)
 
         self.health_bar = HealthBar(x=650, y=900, max_health=self.health)
-
+        self.figure = Figure(x=750, y=720, text="Player")
         # Player-specific elemental levels
         self.fire_level = 1
         self.earth_level = 1
@@ -26,6 +28,7 @@ class Player(Character):
 
     def draw(self, screen):
         self.health_bar.draw(screen)
+        self.figure.draw(screen)  # Draw the Player Figure
 
 
     def __str__(self):
