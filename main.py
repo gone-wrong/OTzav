@@ -20,17 +20,17 @@ enemy = Enemy(health=80, level=1)
 cards = spawn_cards(20)
 
 # Button Click Functions
-def button_1_action():
-    print("Button 1 clicked!")
+def button_fire_action():
+    player.player_attack(enemy, player.fire)
 
-def button_2_action():
-    print("Button 2 clicked!")
+def button_earth_action():
+    player.player_attack(enemy, player.earth)
 
-def button_3_action():
-    print("Button 3 clicked!")
+def button_lightning_action():
+    player.player_attack(enemy, player.lightning)
 
-def button_4_action():
-    print("Button 4 clicked!")
+def button_water_action():
+    player.player_attack(enemy, player.water)
 
 def reset_button_action():
     print("Extra Button clicked!")
@@ -44,10 +44,10 @@ button_padding = 60
 
 
 elemental_buttons = [
-    Button(button_x, button_y, button_width, button_height, "F", (200, 100, 100), button_1_action),
-    Button(button_x + button_padding, button_y, button_width, button_height, "E", (100, 200, 100), button_2_action),
-    Button(button_x, button_y + button_padding, button_width, button_height, "L", (200, 200, 100), button_3_action),
-    Button(button_x + button_padding, button_y + button_padding, button_width, button_height, "W", (100, 100, 200), button_4_action),
+    Button(button_x, button_y, button_width, button_height, "F", (200, 100, 100), button_fire_action),
+    Button(button_x + button_padding, button_y, button_width, button_height, "E", (100, 200, 100), button_earth_action),
+    Button(button_x, button_y + button_padding, button_width, button_height, "L", (200, 200, 100), button_lightning_action),
+    Button(button_x + button_padding, button_y + button_padding, button_width, button_height, "W", (100, 100, 200), button_water_action),
 ]
 
 reset_button = Button(1300, 780, 120, 50, "Reset Button", (150, 150, 150), reset_button_action)

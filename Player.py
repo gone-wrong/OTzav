@@ -1,6 +1,7 @@
 from Character import Character
 from HealthBar import HealthBar
 from Figure import Figure
+from Element import Fire, Earth, Water, Lightning  # Import Element Classes
 
 
 class Player(Character):
@@ -9,11 +10,12 @@ class Player(Character):
 
         self.health_bar = HealthBar(x=650, y=900, max_health=self.health)
         self.figure = Figure(x=750, y=720, text="Player")
-        # Player-specific elemental levels
-        self.fire_level = 1
-        self.earth_level = 1
-        self.water_level = 1
-        self.lightning_level = 1
+
+        # Player-specific elemental abilities as instances of the Element classes
+        self.fire = Fire()
+        self.earth = Earth()
+        self.water = Water()
+        self.lightning = Lightning()
 
 
     def take_damage(self, amount):
@@ -33,38 +35,32 @@ class Player(Character):
 
     def __str__(self):
         return (super().__str__() +
-                f"\nPlayer Fire Level: {self.fire_level}, Earth Level: {self.earth_level}, "
-                f"Water Level: {self.water_level}, Lightning Level: {self.lightning_level}")
+                f"\nFire Level: {self.fire.level}, Earth Level: {self.earth.level}, "
+                f"Water Level: {self.water.level}, Lightning Level: {self.lightning.level}")
 
 
     def upgrade_element(self, element_type):
+        """Upgrades the level of a specific element instance."""
         if element_type == "Fire":
-            self.fire_level += 1
-            print(f"Fire level increased to {self.fire_level}")
+            self.fire.level += 1
+            print(f"Fire level increased to {self.fire.level}")
         elif element_type == "Earth":
-            self.earth_level += 1
-            print(f"Earth level increased to {self.earth_level}")
+            self.earth.level += 1
+            print(f"Earth level increased to {self.earth.level}")
         elif element_type == "Water":
-            self.water_level += 1
-            print(f"Water level increased to {self.water_level}")
+            self.water.level += 1
+            print(f"Water level increased to {self.water.level}")
         elif element_type == "Lightning":
-            self.lightning_level += 1
-            print(f"Lightning level increased to {self.lightning_level}")
+            self.lightning.level += 1
+            print(f"Lightning level increased to {self.lightning.level}")
         else:
             print("Invalid element type.")
 
 
-    def get_element_level(self, element_type):
-        if element_type == "Fire":
-            return self.fire_level
-        elif element_type == "Earth":
-            return self.earth_level
-        elif element_type == "Water":
-            return self.water_level
-        elif element_type == "Lightning":
-            return self.lightning_level
-        else:
-            print("Invalid element type.")
-            return None
+    def player_attack(self, enemy, element):
+        enemy.apply_element(element) # Applies element to the enemy and checks for reactions
+        element.damage_character(enemy) # Deals elements damage to enemy
+
+
 
 
