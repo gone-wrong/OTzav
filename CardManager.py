@@ -42,3 +42,8 @@ def spawn_cards(ct, player, probabilities):
         cards.append(card)
 
     return cards
+
+
+def reset_card_used(cards):
+    for card in cards:
+        card.reset_used()

@@ -9,6 +9,7 @@ class Card:
         self.color = color
         self.rect = pygame.Rect(x, y, 100, 150)
         self.player = player
+        self.used = False  # The same card cant be clicked more than once per turn
 
 
     def draw(self, screen):
@@ -16,10 +17,15 @@ class Card:
 
 
     def is_clicked(self, mouse_pos):
-        return self.rect.collidepoint(mouse_pos)
+        return self.rect.collidepoint(mouse_pos) and not self.used
 
 
     def on_click(self):
-        print(f"Card '{self.card_type}' was clicked")
+        if not self.used:
+            print(f"Card '{self.card_type}' was clicked")
+            self.used = True  # Mark the card as used
+
+    def reset_used(self):
+        self.used = False
 
 

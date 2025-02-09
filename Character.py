@@ -11,6 +11,10 @@ class Character:
         frozenset([Water, Earth]): "Bloom",
         frozenset([Water, Lightning]): "Zapped"
     }
+    OPPOSING_PAIRS = {
+        (Fire, Water), (Water, Fire),  # Fire x Water
+        (Lightning, Earth), (Earth, Lightning)  # Lightning x Earth
+    }
 
     def __init__(self, health=100, level=1):
         self.max_health = health # Default 100
@@ -43,20 +47,12 @@ class Character:
         self.health += amount
 
 
-    def apply_status_effect(self, effect):
-        if effect in self.STATUS_EFFECTS:
-            self.status_effect = effect
-        else:
-            print(f"Invalid status effect: {effect}.")
-
-
-    def remove_status_effect(self):
-        self.status_effect = None
-
-
     def apply_element(self, element):
-        #if isinstance(element, tuple(self.APPLIED_ELEMENTS))
         if isinstance(element, Element):
+            if self.applied_element and (type(self.applied_element), type(element)) in self.OPPOSING_PAIRS:
+                print(f"Opposing elements met resetting next_reaction_level.")
+                self.next_reaction_level = 0
+
             self.prev_applied_element = self.applied_element
             self.applied_element = element
             self.next_reaction_level += element.level + element.temp_level

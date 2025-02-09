@@ -1,5 +1,5 @@
 import pygame
-from CardManager import spawn_cards
+from CardManager import spawn_cards, reset_card_used
 from Player import Player
 from Enemy import Enemy
 from Button import Button
@@ -22,9 +22,16 @@ enemy = Enemy(health=80, level=1)
 # Generate cards
 cards = spawn_cards(20, player, player.probabilities)
 
+used_cards = []  # Cards to be removed next turn
+
+def remove_used_cards():
+    global cards
+    cards = [card for card in cards if card not in used_cards]
+
+
 selected_element = None
 selected_cards = 0
-max_card_clicks = 2
+max_card_clicks = player.max_cards_flipped
 
 
 # Button Click Functions
@@ -106,6 +113,7 @@ while running:
                                     (selected_element == player.water and card.card_type == "W") or \
                                     (selected_element == player.lightning and card.card_type == "L"):
                                 selected_element.increase_temp_level()
+                                used_cards.append(card)
                                 print(f"temp level increased to {selected_element.temp_level}")
 
                 # Attack the enemy after selecting two cards
@@ -113,15 +121,16 @@ while running:
                     print("Player attacks the enemy!")
                     player.player_attack(enemy, selected_element)
 
-                    print(f"curr - {enemy.current_reaction_level} , next {enemy.next_reaction_level}")
                     # Enemy's Turn
                     enemy_turn()
-                    print(f"{enemy.current_reaction_level} , next {enemy.next_reaction_level}")
                     # Reset for next turn
                     selected_element.reset_temp_level()  # Reset temp_level
-                    print(f"{enemy.current_reaction_level} , next {enemy.next_reaction_level}")
                     selected_element = None
                     selected_cards = 0
+                    # Remove used cards
+                    cards = [card for card in cards if card not in used_cards]
+                    used_cards.clear()
+                    reset_card_used(cards)
 
     # Draw UI Elements
     enemy.draw(screen)  # Enemy Health Bar (top)

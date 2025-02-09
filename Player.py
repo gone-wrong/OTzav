@@ -17,6 +17,8 @@ class Player(Character):
         self.water = Water()
         self.lightning = Lightning()
         self.probabilities = {"F": 1, "E": 1, "L": 1, "W": 1}
+        self.max_cards_flipped = 2
+        self.skill_points = 0
 
 
     def take_damage(self, amount):
@@ -38,6 +40,12 @@ class Player(Character):
         return (super().__str__() +
                 f"\nFire Level: {self.fire.level}, Earth Level: {self.earth.level}, "
                 f"Water Level: {self.water.level}, Lightning Level: {self.lightning.level}")
+
+
+    def upgrade_max_cards_flipped(self):
+        """Upgrades the total for max_cards_flipped."""
+        self.max_cards_flipped += 1
+        print(f"Upgraded max_cards_flipped to {self.max_cards_flipped}")
 
 
     def upgrade_element(self, element_type):
