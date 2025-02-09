@@ -8,8 +8,9 @@ class HealthBar:
         self.height = 20
         self.max_health = max_health
         self.current_health = max_health
-        self.color = (255, 0, 0)  # Default red
-        self.border_color = (255, 255, 255)  # Default white
+        self.color = (255, 0, 0)  #Default red
+        self.border_color = (255, 255, 255)  #Default white
+        self.font = pygame.font.Font(None, 24)
 
 
     def update(self, new_health):
@@ -28,3 +29,9 @@ class HealthBar:
 
         # Draw the border
         pygame.draw.rect(screen, self.border_color, (self.x, self.y, self.width, self.height), 2)
+
+        # Draw the current_health/max_health text
+        health_text = f"{self.current_health} / {self.max_health}"
+        text_surface = self.font.render(health_text, True, (255, 255, 255))
+        text_rect = text_surface.get_rect(center=(self.x + self.width // 2, self.y + self.height // 2))
+        screen.blit(text_surface, text_rect) # blit(image/position)

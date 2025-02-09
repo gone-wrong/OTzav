@@ -10,6 +10,7 @@ class Enemy(Character):
         self.health_bar = HealthBar(x=650, y=50, max_health=self.health)
         self.figure = Figure(x=750, y=100, text="Enemy")
 
+
     def take_damage(self, amount):
         super().take_damage(amount)
         self.health_bar.update(self.health)
@@ -22,7 +23,7 @@ class Enemy(Character):
 
     def draw(self, screen):
         self.health_bar.draw(screen)
-        self.figure.draw(screen)  # Draw the Enemy Figure
+        self.figure.draw(screen) # Draw the Enemy Figure
 
 
     def __str__(self):

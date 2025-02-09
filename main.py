@@ -96,8 +96,7 @@ while running:
                                     (selected_element == player.water and card.card_type == "W") or \
                                     (selected_element == player.lightning and card.card_type == "L"):
                                 selected_element.increase_temp_level()
-                                print(
-                                    f"temp level increased to {selected_element.temp_level}")
+                                print(f"temp level increased to {selected_element.temp_level}")
 
                 # Third step: Attack the enemy after selecting two cards
                 if selected_cards == max_card_clicks:
