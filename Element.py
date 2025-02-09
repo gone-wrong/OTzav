@@ -12,6 +12,7 @@ class Element:
 
     def damage_character(self, character):
         damage_dealt = self.damage * (self.level + self.temp_level)
+        print(f"Did {damage_dealt} damage.")
         character.take_damage(damage_dealt)
 
 
