@@ -36,7 +36,21 @@ max_card_clicks = player.max_cards_flipped
 
 # Button Click Functions
 def reset_button_action():
-    print("Reset Button clicked!")
+    global cards, selected_element, selected_cards
+    #Mayhaps
+    # if selected_element is not None:
+    #     return
+    print("Reset Button clicked! Ending turn and refreshing cards.")
+
+    # Spawn a new set of 20 cards
+    cards = spawn_cards(20, player, player.probabilities)
+
+    # Reset turn variables
+    selected_element = None
+    selected_cards = 0
+
+    # Enemy's Turn
+    enemy_turn()
 
 
 def select_element(element_type):
@@ -94,8 +108,12 @@ while running:
 
         elif event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1:  # Left mouse button
+                # Reset cards and end turn
+                if reset_button.is_clicked(event.pos):
+                    reset_button.handle_click()
+
                 # Select an element
-                if selected_element is None:
+                elif selected_element is None:
                     for button in buttons:
                         if button.is_clicked(event.pos):
                             button.handle_click()
