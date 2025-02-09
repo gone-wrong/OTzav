@@ -98,7 +98,7 @@ while running:
                                 selected_element.increase_temp_level()
                                 print(f"temp level increased to {selected_element.temp_level}")
 
-                # Third step: Attack the enemy after selecting two cards
+                # Attack the enemy after selecting two cards
                 if selected_cards == max_card_clicks:
                     print("Player attacks the enemy!")
                     player.player_attack(enemy, selected_element)

@@ -134,3 +134,6 @@ class Character:
                 print(f"Bloom recovered {bloom_heal} health.")
             else:
                 print(f"Invalid status effect: {self.status_effect}.")
+
+        if self.status_effect_duration == 0:
+            self.status_effect = None
