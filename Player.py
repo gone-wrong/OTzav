@@ -16,6 +16,7 @@ class Player(Character):
         self.earth = Earth()
         self.water = Water()
         self.lightning = Lightning()
+        self.probabilities = {"F": 1, "E": 1, "L": 1, "W": 1}
 
 
     def take_damage(self, amount):

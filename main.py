@@ -17,11 +17,10 @@ running = True
 player = Player(health=100, level=1)
 enemy = Enemy(health=80, level=1)
 
-# Card probabilities
-probabilities = {"F": 1, "E": 1, "L": 1, "W": 1}
+
 
 # Generate cards
-cards = spawn_cards(20, player, probabilities)
+cards = spawn_cards(20, player, player.probabilities)
 
 selected_element = None
 selected_cards = 0
@@ -46,6 +45,17 @@ def select_element(element_type):
 
     selected_cards = 0  # Reset the card counter
     print(f"Element {element_type} selected!")
+
+
+def enemy_turn():
+    if enemy.skip_turn:
+        print("Enemy skips turn because of Zapped")
+        enemy.skip_turn = False
+        return
+
+    enemy.handle_status_effect(player)
+    print("Enemy attacks the player!")
+    player.take_damage(5)
 
 
 # Elemental Buttons
@@ -103,8 +113,13 @@ while running:
                     print("Player attacks the enemy!")
                     player.player_attack(enemy, selected_element)
 
+                    print(f"curr - {enemy.current_reaction_level} , next {enemy.next_reaction_level}")
+                    # Enemy's Turn
+                    enemy_turn()
+                    print(f"{enemy.current_reaction_level} , next {enemy.next_reaction_level}")
                     # Reset for next turn
                     selected_element.reset_temp_level()  # Reset temp_level
+                    print(f"{enemy.current_reaction_level} , next {enemy.next_reaction_level}")
                     selected_element = None
                     selected_cards = 0
 

@@ -20,7 +20,8 @@ class Character:
         self.status_effect_duration = 0
         self.applied_element = None
         self.prev_applied_element = None
-        self.reaction_level = 0
+        self.next_reaction_level = 0
+        self.current_reaction_level = 0
         self.skip_turn = False
 
 
@@ -58,6 +59,7 @@ class Character:
         if isinstance(element, Element):
             self.prev_applied_element = self.applied_element
             self.applied_element = element
+            self.next_reaction_level += element.level + element.temp_level
             self.trigger_reaction()
         else:
             print(f"Invalid applied element: {element}.")
@@ -72,7 +74,8 @@ class Character:
             reaction = self.REACTIONS.get(frozenset([type(self.prev_applied_element), type(self.applied_element)]))
 
             if reaction:
-                self.reaction_level = self.prev_applied_element.level + self.applied_element.level
+                self.current_reaction_level = self.next_reaction_level
+                self.next_reaction_level = 0
                 self.prev_applied_element = None
                 self.applied_element = None
                 print(f"Triggered reaction: {reaction}")
@@ -102,7 +105,7 @@ class Character:
 
 
     def handle_explode(self):
-        explode_damage = self.reaction_level * 5 // 3
+        explode_damage = self.current_reaction_level * 5 // 3
         print(f"Exploding for {explode_damage} damage.")
         self.take_damage(explode_damage)
 
@@ -114,24 +117,24 @@ class Character:
 
 
     def handle_zapped(self):
-        zap_chance = 5 * self.reaction_level // 2
+        zap_chance = 5 * self.current_reaction_level // 2
         zap_chance = min(zap_chance, 50) / 100
         random_res = random.random()
         self.skip_turn = random.random() < zap_chance
-        print(f"Zapped with {zap_chance}, random_res = {random_res} -> skip_turn set to {self.skip_turn}")
+        print(f"Zapped with {zap_chance}, reaction level {self.current_reaction_level}, random_res = {random_res} -> skip_turn set to {self.skip_turn}")
 
 
     def handle_status_effect(self, player):
         if self.status_effect:
             self.status_effect_duration -= 1
             if self.status_effect == "Burning":
-                burn_damage = 5 * self.reaction_level // 4
+                burn_damage = 5 * self.current_reaction_level // 4
                 self.take_damage(burn_damage)
-                print(f"Burned for {burn_damage} damage.")
+                print(f"Burned for {burn_damage} damage, reaction level {self.current_reaction_level}.")
             elif self.status_effect == "Bloom":
-                bloom_heal = 5 * self.reaction_level // 3
+                bloom_heal = 5 * self.current_reaction_level // 3
                 player.heal(bloom_heal)
-                print(f"Bloom recovered {bloom_heal} health.")
+                print(f"Bloom recovered {bloom_heal} health, reaction level {self.current_reaction_level}. ")
             else:
                 print(f"Invalid status effect: {self.status_effect}.")
 
