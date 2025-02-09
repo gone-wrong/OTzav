@@ -17,12 +17,11 @@ running = True
 player = Player(health=100, level=1)
 enemy = Enemy(health=80, level=1)
 
-
-
 # Generate cards
 cards = spawn_cards(20, player, player.probabilities)
 
 used_cards = []  # Cards to be removed next turn
+
 
 def remove_used_cards():
     global cards
@@ -37,9 +36,8 @@ max_card_clicks = player.max_cards_flipped
 # Button Click Functions
 def reset_button_action():
     global cards, selected_element, selected_cards
-    #Mayhaps
-    # if selected_element is not None:
-    #     return
+    if selected_element is not None:
+        return
     print("Reset Button clicked! Ending turn and refreshing cards.")
 
     # Spawn a new set of 20 cards
@@ -98,9 +96,25 @@ buttons = [
 
 reset_button = Button(1300, 780, 120, 50, "Reset Button", (150, 150, 150), reset_button_action)
 
+
+def draw_all():
+    screen.fill("grey")  # Clear screen
+    # Draw UI Elements
+    enemy.draw(screen)  # Enemy Health Bar (top)
+    for card in cards:
+        card.draw(screen)  # Cards (middle)
+    player.draw(screen)  # Player Health Bar and Figure
+
+    # Draw buttons
+    for button in buttons:
+        button.draw(screen)
+    reset_button.draw(screen)
+
+    pygame.display.flip()
+
+
 # Game loop (for now: Select element with button -> Click 2(for now) cards -> Player attack -> Reset)
 while running:
-    screen.fill("grey")  # Clear screen
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -136,7 +150,13 @@ while running:
 
                 # Attack the enemy after selecting two cards
                 if selected_cards == max_card_clicks:
+                    # Wait for cards to finish flipping then continue
+                    while not all([card.anim_state == 2 or not card.used for card in cards]):
+                        draw_all()
+                        clock.tick(60)
+
                     print("Player attacks the enemy!")
+
                     player.player_attack(enemy, selected_element)
 
                     # Enemy's Turn
@@ -147,21 +167,12 @@ while running:
                     selected_cards = 0
                     # Remove used cards
                     cards = [card for card in cards if card not in used_cards]
+                    print(len(cards))
                     used_cards.clear()
-                    reset_card_used(cards)
+                    reset_card_used(cards) # Sets cards.used to False, cards.anim_state and cards.anim_counter to 0
 
-    # Draw UI Elements
-    enemy.draw(screen)  # Enemy Health Bar (top)
-    for card in cards:
-        card.draw(screen)  # Cards (middle)
-    player.draw(screen)  # Player Health Bar and Figure
-
-    # Draw buttons
-    for button in buttons:
-        button.draw(screen)
-    reset_button.draw(screen)
-
-    pygame.display.flip()
+    draw_all()
     clock.tick(60)
+
 
 pygame.quit()
