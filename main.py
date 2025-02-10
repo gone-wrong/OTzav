@@ -1,9 +1,11 @@
 import pygame
+import random
 from CardManager import spawn_cards, reset_card_used
 from Player import Player
 from Enemy import Enemy
 from Button import Button
 from Element import Fire, Earth, Water, Lightning
+from Ball import Ball
 
 # Pygame setup
 pygame.init()
@@ -14,8 +16,20 @@ clock = pygame.time.Clock()
 running = True
 
 # Player and Enemy instances
+enemies_beaten = 0
 player = Player(health=100, level=1)
-enemy = Enemy(health=80, level=1)
+all_enemies = [
+    Enemy(health=80, level=1),
+    Enemy(health=90, level=1),
+    Enemy(health=85, level=1),
+    Enemy(health=95, level=1),
+    Enemy(health=200, level=1)  # Boss enemy (last in list)
+]
+
+enemies = random.sample(all_enemies[:-1], 4)
+
+current_enemy = enemies.pop(0)
+ball = Ball()
 
 # Generate cards
 cards = spawn_cards(20, player, player.probabilities)
@@ -66,13 +80,33 @@ def select_element(element_type):
     print(f"Element {element_type} selected!")
 
 
+def handle_enemy_defeat():
+    global current_enemy, enemies
+
+    if current_enemy.health <= 0:
+        print(f"{current_enemy} is dead")
+
+        if enemies:
+            current_enemy = enemies.pop(0)
+            print(f"Next enemy: {current_enemy}")
+        else:
+            current_enemy = all_enemies[-1]
+            print(f"Next boss enemy: {current_enemy}")
+
+        if current_enemy.health <= 0 and current_enemy == all_enemies[-1]:
+            player.skill_points += 5
+
+            enemies = random.sample(all_enemies[:-1], 4)
+            current_enemy = enemies.pop(0)
+
+
 def enemy_turn():
-    if enemy.skip_turn:
+    if current_enemy.skip_turn:
         print("Enemy skips turn because of Zapped")
-        enemy.skip_turn = False
+        current_enemy.skip_turn = False
         return
 
-    enemy.handle_status_effect(player)
+    current_enemy.handle_status_effect(player)
     print("Enemy attacks the player!")
     player.take_damage(5)
 
@@ -100,7 +134,7 @@ reset_button = Button(1300, 780, 120, 50, "Reset Button", (150, 150, 150), reset
 def draw_all():
     screen.fill("grey")  # Clear screen
     # Draw UI Elements
-    enemy.draw(screen)  # Enemy Health Bar (top)
+    current_enemy.draw(screen)  # Enemy Health Bar (top)
     for card in cards:
         card.draw(screen)  # Cards (middle)
     player.draw(screen)  # Player Health Bar and Figure
@@ -109,6 +143,8 @@ def draw_all():
     for button in buttons:
         button.draw(screen)
     reset_button.draw(screen)
+
+    ball.draw(screen, selected_element)
 
     pygame.display.flip()
 
@@ -150,14 +186,22 @@ while running:
 
                 # Attack the enemy after selecting two cards
                 if selected_cards == max_card_clicks:
-                    # Wait for cards to finish flipping then continue
                     while not all([card.anim_state == 2 or not card.used for card in cards]):
                         draw_all()
                         clock.tick(60)
 
                     print("Player attacks the enemy!")
 
-                    player.player_attack(enemy, selected_element)
+                    ball.anim_state = 1
+                    while ball.anim_state != 2:
+                        draw_all()
+                        clock.tick(60)
+                    ball.anim_state = 0
+
+                    player.player_attack(current_enemy, selected_element)
+
+                    # Check if the enemy is dead
+                    handle_enemy_defeat()
 
                     # Enemy's Turn
                     enemy_turn()
@@ -169,10 +213,10 @@ while running:
                     cards = [card for card in cards if card not in used_cards]
                     print(len(cards))
                     used_cards.clear()
-                    reset_card_used(cards) # Sets cards.used to False, cards.anim_state and cards.anim_counter to 0
+                    reset_card_used(cards)
 
+                    
     draw_all()
     clock.tick(60)
-
 
 pygame.quit()
