@@ -14,7 +14,7 @@ class Button:
         pygame.draw.rect(screen, self.color, self.rect, border_radius=8)
 
         # Button text
-        text_surface = self.font.render(self.text, True, (0, 0, 0))  # Black text
+        text_surface = self.font.render(self.text, True, (0, 0, 0))
         text_rect = text_surface.get_rect(center=self.rect.center)
         screen.blit(text_surface, text_rect)
 

@@ -16,7 +16,7 @@ class Player(Character):
         self.earth = Earth()
         self.water = Water()
         self.lightning = Lightning()
-        self.probabilities = {"F": 1, "E": 1, "L": 1, "W": 1}
+        self.probabilities = {"Fire": 2, "Earth": 2, "Lightning": 2, "Water": 2}
         self.max_cards_flipped = 2
         self.skill_points = 0
 
@@ -43,13 +43,11 @@ class Player(Character):
 
 
     def upgrade_max_cards_flipped(self):
-        """Upgrades the total for max_cards_flipped."""
         self.max_cards_flipped += 1
         print(f"Upgraded max_cards_flipped to {self.max_cards_flipped}")
 
 
     def upgrade_element(self, element_type):
-        """Upgrades the level of a specific element instance."""
         if element_type == "Fire":
             self.fire.level += 1
             print(f"Fire level increased to {self.fire.level}")
@@ -64,6 +62,15 @@ class Player(Character):
             print(f"Lightning level increased to {self.lightning.level}")
         else:
             print("Invalid element type.")
+
+
+    def upgrade_element_probability(self, element_type):
+        if element_type in self.probabilities:
+            self.probabilities[element_type] += 1
+            print(f"New probabilities: {self.probabilities}")
+        else:
+            print("Invalid element type.")
+
 
 
     def player_attack(self, enemy, element):

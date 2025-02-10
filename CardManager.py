@@ -18,10 +18,10 @@ def spawn_cards(ct, player, probabilities):
 
     #Card types by elements
     element_types = {
-        "F": (200, 100, 100),  #Fire (Red)
-        "E": (100, 200, 100),  #Earth (Green)
-        "L": (200, 200, 100),  #Lightning (Yellow)
-        "W": (100, 100, 200),  #Water (Blue)
+        "Fire": (200, 100, 100),  #Fire (Red)
+        "Earth": (100, 200, 100),  #Earth (Green)
+        "Lightning": (200, 200, 100),  #Lightning (Yellow)
+        "Water": (100, 100, 200),  #Water (Blue)
     }
 
 

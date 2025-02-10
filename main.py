@@ -4,7 +4,7 @@ from CardManager import spawn_cards, reset_card_used
 from Player import Player
 from Enemy import Enemy
 from Button import Button
-from Element import Fire, Earth, Water, Lightning
+from UpgradeMenu import UpgradeMenu
 from Ball import Ball
 
 # Pygame setup
@@ -15,15 +15,22 @@ screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 clock = pygame.time.Clock()
 running = True
 
+
 # Player and Enemy instances
 enemies_beaten = 0
 player = Player(health=100, level=1)
 all_enemies = [
-    Enemy(health=80, level=1),
-    Enemy(health=90, level=1),
-    Enemy(health=85, level=1),
-    Enemy(health=95, level=1),
-    Enemy(health=200, level=1)  # Boss enemy (last in list)
+    # Enemy(health=80, level=1),
+    # Enemy(health=90, level=1),
+    # Enemy(health=85, level=1),
+    # Enemy(health=95, level=1),
+    # Enemy(health=200, level=1)  # Boss enemy (last in list)
+    # Test enemies
+    Enemy(health=5, level=1),
+    Enemy(health=15, level=1),
+    Enemy(health=10, level=1),
+    Enemy(health=20, level=1),
+    Enemy(health=50, level=1)  # Boss enemy (last in list)
 ]
 
 enemies = random.sample(all_enemies[:-1], 4)
@@ -44,7 +51,6 @@ def remove_used_cards():
 
 selected_element = None
 selected_cards = 0
-max_card_clicks = player.max_cards_flipped
 
 
 # Button Click Functions
@@ -130,10 +136,13 @@ buttons = [
 
 reset_button = Button(1300, 780, 120, 50, "Reset Button", (150, 150, 150), reset_button_action)
 
+upgrade_menu = UpgradeMenu(player)
+
 
 def draw_all():
     screen.fill("grey")  # Clear screen
-    # Draw UI Elements
+
+    upgrade_menu.draw(screen)
     current_enemy.draw(screen)  # Enemy Health Bar (top)
     for card in cards:
         card.draw(screen)  # Cards (middle)
@@ -156,66 +165,75 @@ while running:
         if event.type == pygame.QUIT:
             running = False
 
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_u:  # Press 'U' to open/close Upgrade Menu
+                if upgrade_menu.is_showing:
+                    upgrade_menu.hide()
+                else:
+                    upgrade_menu.show()
+
         elif event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1:  # Left mouse button
-                # Reset cards and end turn
-                if reset_button.is_clicked(event.pos):
-                    reset_button.handle_click()
+                if upgrade_menu.is_showing:
+                    upgrade_menu.handle_click(event.pos)  # Only allow UpgradeMenu clicks
+                else:
+                    # Reset cards and end turn
+                    if reset_button.is_clicked(event.pos):
+                        reset_button.handle_click()
 
-                # Select an element
-                elif selected_element is None:
-                    for button in buttons:
-                        if button.is_clicked(event.pos):
-                            button.handle_click()
+                    # Select an element
+                    elif selected_element is None:
+                        for button in buttons:
+                            if button.is_clicked(event.pos):
+                                button.handle_click()
 
-                # Click cards
-                elif selected_cards < max_card_clicks:
-                    for card in cards:
-                        if card.is_clicked(event.pos):
-                            card.on_click()
-                            selected_cards += 1
+                    # Click cards
+                    elif selected_cards < player.max_cards_flipped:
+                        for card in cards:
+                            if card.is_clicked(event.pos):
+                                card.on_click()
+                                selected_cards += 1
 
-                            # If the clicked card matches the selected element, increase temp_level
-                            if (selected_element == player.fire and card.card_type == "F") or \
-                                    (selected_element == player.earth and card.card_type == "E") or \
-                                    (selected_element == player.water and card.card_type == "W") or \
-                                    (selected_element == player.lightning and card.card_type == "L"):
-                                selected_element.increase_temp_level()
-                                used_cards.append(card)
-                                print(f"temp level increased to {selected_element.temp_level}")
+                                # If the clicked card matches the selected element, increase temp_level
+                                if (selected_element == player.fire and card.card_type == "Fire") or \
+                                        (selected_element == player.earth and card.card_type == "Earth") or \
+                                        (selected_element == player.water and card.card_type == "Water") or \
+                                        (selected_element == player.lightning and card.card_type == "Lightning"):
+                                    selected_element.increase_temp_level()
+                                    used_cards.append(card)
+                                    print(f"temp level increased to {selected_element.temp_level}")
 
-                # Attack the enemy after selecting two cards
-                if selected_cards == max_card_clicks:
-                    while not all([card.anim_state == 2 or not card.used for card in cards]):
-                        draw_all()
-                        clock.tick(60)
+                    # Attack the enemy after selecting two cards
+                    if selected_cards == player.max_cards_flipped:
+                        while not all([card.anim_state == 2 or not card.used for card in cards]):
+                            draw_all()
+                            clock.tick(60)
 
-                    print("Player attacks the enemy!")
+                        print("Player attacks the enemy!")
 
-                    ball.anim_state = 1
-                    while ball.anim_state != 2:
-                        draw_all()
-                        clock.tick(60)
-                    ball.anim_state = 0
+                        ball.anim_state = 1
+                        while ball.anim_state != 2:
+                            draw_all()
+                            clock.tick(60)
+                        ball.anim_state = 0
 
-                    player.player_attack(current_enemy, selected_element)
+                        player.player_attack(current_enemy, selected_element)
 
-                    # Check if the enemy is dead
-                    handle_enemy_defeat()
+                        # Check if the enemy is dead
+                        handle_enemy_defeat()
 
-                    # Enemy's Turn
-                    enemy_turn()
-                    # Reset for next turn
-                    selected_element.reset_temp_level()  # Reset temp_level
-                    selected_element = None
-                    selected_cards = 0
-                    # Remove used cards
-                    cards = [card for card in cards if card not in used_cards]
-                    print(len(cards))
-                    used_cards.clear()
-                    reset_card_used(cards)
+                        # Enemy's Turn
+                        enemy_turn()
+                        # Reset for next turn
+                        selected_element.reset_temp_level()  # Reset temp_level
+                        selected_element = None
+                        selected_cards = 0
+                        # Remove used cards
+                        cards = [card for card in cards if card not in used_cards]
+                        used_cards.clear()
+                        reset_card_used(cards)
 
-                    
+
     draw_all()
     clock.tick(60)
 
