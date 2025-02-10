@@ -17,25 +17,26 @@ running = True
 
 
 # Player and Enemy instances
-enemies_beaten = 0
 player = Player(health=100, level=1)
+
 all_enemies = [
-    # Enemy(health=80, level=1),
-    # Enemy(health=90, level=1),
-    # Enemy(health=85, level=1),
-    # Enemy(health=95, level=1),
-    # Enemy(health=200, level=1)  # Boss enemy (last in list)
+    # [80, 1],
+    # [90, 1],
+    # [85, 1],
+    # [95, 1],
+    # [200, 1]  # Boss enemy (last in list)
     # Test enemies
-    Enemy(health=5, level=1),
-    Enemy(health=15, level=1),
-    Enemy(health=10, level=1),
-    Enemy(health=20, level=1),
-    Enemy(health=50, level=1)  # Boss enemy (last in list)
+    [5, 1],
+    [15, 1],
+    [10, 1],
+    [20, 1],
+    [50, 1]  # Boss enemy (last in list)
 ]
 
-enemies = random.sample(all_enemies[:-1], 4)
-
+# Instantiate First Set of Enemies
+enemies = [Enemy(*stats) for stats in random.sample(all_enemies[:-1], 4)]  # First 4 randomized enemies
 current_enemy = enemies.pop(0)
+
 ball = Ball()
 
 # Generate cards
@@ -85,30 +86,37 @@ def select_element(element_type):
     selected_cards = 0  # Reset the card counter
     print(f"Element {element_type} selected!")
 
-
+boss_fight = False
 def handle_enemy_defeat():
-    global current_enemy, enemies
+    global current_enemy, enemies, boss_fight
 
     if current_enemy.health <= 0:
         print(f"{current_enemy} is dead")
 
-        if enemies:
-            current_enemy = enemies.pop(0)
-            print(f"Next enemy: {current_enemy}")
-        else:
-            current_enemy = all_enemies[-1]
-            print(f"Next boss enemy: {current_enemy}")
-
-        if current_enemy.health <= 0 and current_enemy == all_enemies[-1]:
+        if boss_fight:
             player.skill_points += 5
 
-            enemies = random.sample(all_enemies[:-1], 4)
+            enemies = [Enemy(*stats) for stats in random.sample(all_enemies[:-1], 4)]
             current_enemy = enemies.pop(0)
+            boss_fight = False
+
+        if enemies:
+            current_enemy = enemies.pop(0)
+            current_enemy.skip_turn = True
+            print(f"Next enemy: {current_enemy}")
+        else:
+            boss_fight = True
+            boss_stats = all_enemies[-1]
+            current_enemy = Enemy(*boss_stats)
+            current_enemy.skip_turn = True
+            print(f"Next boss enemy: {current_enemy}")
+
+
 
 
 def enemy_turn():
     if current_enemy.skip_turn:
-        print("Enemy skips turn because of Zapped")
+        print("Enemy skips turn because of Zapped or was just Spawned")
         current_enemy.skip_turn = False
         return
 
