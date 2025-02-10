@@ -18,6 +18,7 @@ class Enemy(Character):
         self.health_bar.update(self.health)
 
 
+
     def heal(self, amount):
         super().heal(amount)
         self.health_bar.update(self.health)

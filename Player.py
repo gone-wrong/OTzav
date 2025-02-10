@@ -24,11 +24,13 @@ class Player(Character):
     def take_damage(self, amount):
         super().take_damage(amount)
         self.health_bar.update(self.health)
+        self.figure.set_damage_taken(f"-{amount}")
 
 
     def heal(self, amount):
         super().heal(amount)
         self.health_bar.update(self.health)
+        self.figure.set_status_effect(f"+{amount}", "Bloom")
 
 
     def draw(self, screen):

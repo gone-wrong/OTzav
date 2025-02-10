@@ -26,10 +26,16 @@ all_enemies = [
     # [95, 1],
     # [200, 1]  # Boss enemy (last in list)
     # Test enemies
-    [5, 1],
-    [15, 1],
-    [10, 1],
-    [20, 1],
+    # [5, 1],
+    # [15, 1],
+    # [10, 1],
+    # [20, 1],
+    # [50, 1]  # Boss enemy (last in list)
+    # Beeffy Test enemies
+    [500, 1],
+    [150, 1],
+    [100, 1],
+    [200, 1],
     [50, 1]  # Boss enemy (last in list)
 ]
 
