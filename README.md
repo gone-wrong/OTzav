@@ -93,7 +93,12 @@ Card selection system for attack strategy
 Enemy waves & health bars for progress tracking
 Floating damage numbers & status effects
 UpgradeMenu
-
+    Two Buttons for each element. First for element level, second for element probability followod by current values respectively.
+    Button for increasing elemental cards used per turn.
+    Current skill points display. Button for closing the UpgradeMenu.
+    Upgrades prices are: element level+ for 1 Skill point
+                         element probabilityx for 2 skill points
+                         elemental cards used per turn for 3 skill points
 
 
 5.2 Controls
