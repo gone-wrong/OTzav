@@ -5,18 +5,19 @@ class Card:
     def __init__(self, card_type, x, y, color, player, PROPORTION):
         self.PROPORTION = PROPORTION
         self.card_type = card_type
-        self.x = x * PROPORTION
-        self.y = y * PROPORTION
+        self.x = x
+        self.y = y
         self.width = 100 * PROPORTION
         self.height = 150 * PROPORTION
         self.color = color
-        self.rect = pygame.Rect(x, y, self.width, self.height)
+        self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
         self.player = player
         self.anim_state = 0
         self.anim_counter = 0
         self.anim_max_counter = 50
         self.used = False  # The same card can't be clicked more than once per turn
         self.border_radius = int(10 * self.PROPORTION)
+
 
 
     def draw(self, screen):
@@ -26,7 +27,8 @@ class Card:
         if self.anim_state == 1:
             x_step = ((self.width / 2) / (self.anim_max_counter / 2))
             width_step = (self.width / (self.anim_max_counter / 2))
-            if self.anim_counter <= self.anim_max_counter / 2:
+
+            if self.anim_counter < self.anim_max_counter / 2:
                 self.rect.x += x_step
                 self.rect.width -= width_step
                 pygame.draw.rect(screen, (10, 10, 10), self.rect, border_radius=self.border_radius)
@@ -34,10 +36,15 @@ class Card:
                 self.rect.x -= x_step
                 self.rect.width += width_step
                 pygame.draw.rect(screen, self.color, self.rect, border_radius=self.border_radius)
+
             self.anim_counter += 1
             if self.anim_counter == self.anim_max_counter:
                 self.anim_state = 2
-        if self.anim_state == 2:
+
+        if self.anim_state >= 2:
+            # Correct floating point errors
+            self.rect.width = self.width
+            self.rect.x = self.x
             pygame.draw.rect(screen, self.color, self.rect, border_radius=self.border_radius)
 
 

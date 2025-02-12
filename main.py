@@ -16,6 +16,7 @@ SCREEN_HEIGHT = 960
 PROPORTION = 1
 if SCREEN_HEIGHT > display_info.current_h:
     PROPORTION =  display_info.current_h / SCREEN_HEIGHT
+    PROPORTION -= 0.05
 
 
 screen = pygame.display.set_mode((SCREEN_WIDTH * PROPORTION, SCREEN_HEIGHT * PROPORTION))
@@ -27,11 +28,11 @@ running = True
 player = Player(health=100, level=1, PROPORTION=PROPORTION)
 
 all_enemies = [
-    [80, 1],
-    [90, 1],
-    [85, 1],
-    [95, 1],
-    [200, 1]  # Boss enemy (last in list)
+    [40, 1],
+    [45, 1],
+    [35, 1],
+    [50, 1],
+    [100, 1]  # Boss enemy (last in list)
     # Test enemies
     # [5, 1],
     # [15, 1],
