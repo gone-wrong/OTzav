@@ -16,7 +16,7 @@ class Character:
         (Lightning, Earth), (Earth, Lightning)  # Lightning x Earth
     }
 
-    def __init__(self, health=100, level=1):
+    def __init__(self, health=100, level=1, figure=None, health_bar=None):
         self.max_health = health # Default 100
         self.health = health
         self.level = level  # Default 1
@@ -27,6 +27,8 @@ class Character:
         self.next_reaction_level = 0
         self.current_reaction_level = 0
         self.skip_turn = False
+        self.figure = figure
+        self.health_bar = health_bar
 
 
     def __str__(self):
@@ -41,10 +43,14 @@ class Character:
         self.health -= amount
         if self.health < 0:
             self.health = 0
+        self.figure.set_damage_taken(f"-{amount}")
+        self.health_bar.update(self.health)
 
 
     def heal(self, amount):
         self.health += amount
+        self.figure.set_status_effect(f"+{amount}", "Bloom")
+        self.health_bar.update(self.health)
 
 
     def apply_element(self, element):
@@ -103,7 +109,12 @@ class Character:
     def handle_explode(self):
         explode_damage = self.current_reaction_level * 5 // 3
         print(f"Exploding for {explode_damage} damage.")
-        self.take_damage(explode_damage)
+        self.health -= explode_damage
+        if self.health < 0:
+            self.health = 0
+        self.figure.set_status_effect(f"-{explode_damage}", "Burning")
+        self.health_bar.update(self.health)
+
 
 
     def handle_bloom(self):
@@ -125,7 +136,13 @@ class Character:
             self.status_effect_duration -= 1
             if self.status_effect == "Burning":
                 burn_damage = 5 * self.current_reaction_level // 4
-                self.take_damage(burn_damage)
+                # To not conflict with normal damage taken indicators (instead of calling self.take_damage)
+                self.health -= burn_damage
+                if self.health < 0:
+                    self.health = 0
+                self.figure.set_status_effect(f"-{burn_damage}", "Burning")
+                self.health_bar.update(self.health)
+
                 print(f"Burned for {burn_damage} damage, reaction level {self.current_reaction_level}.")
             elif self.status_effect == "Bloom":
                 bloom_heal = 5 * self.current_reaction_level // 3

@@ -6,22 +6,20 @@ from Element import Fire, Earth, Water, Lightning
 
 
 class Enemy(Character):
-    def __init__(self, health=100, level=1):
-        super().__init__(health, level)
-
-        self.health_bar = HealthBar(x=650, y=50, max_health=self.health)
-        self.figure = Figure(x=750, y=100, text="Enemy")
+    def __init__(self, health=100, level=1, PROPORTION=1):
+        super().__init__(health, level, Figure(x=750, y=100, text="Enemy", PROPORTION=PROPORTION), HealthBar(x=650, y=50, max_health=health, PROPORTION=PROPORTION))
+        self.PROPORTION = PROPORTION
 
 
     def take_damage(self, amount):
         super().take_damage(amount)
-        self.health_bar.update(self.health)
+        # self.health_bar.update(self.health)
 
 
 
     def heal(self, amount):
         super().heal(amount)
-        self.health_bar.update(self.health)
+        # self.health_bar.update(self.health)
 
 
     def draw(self, screen):
@@ -29,16 +27,16 @@ class Enemy(Character):
         self.figure.draw(screen) # Draw the Enemy Figure
 
         # Positions for indicator circles
-        left_circle_x = self.figure.x - 20
-        right_circle_x = self.figure.x + self.figure.width + 20
-        circle_y = self.figure.y + 10
+        left_circle_x = self.figure.x - (20 * self.PROPORTION)
+        right_circle_x = self.figure.x + self.figure.width + (20 * self.PROPORTION)
+        circle_y = self.figure.y + (10 * self.PROPORTION)
 
         # Colors for indicator circle
         element_color = self.get_element_color()
         status_color = self.get_status_color()
 
-        pygame.draw.circle(screen, element_color, (left_circle_x, circle_y), 10)  # Applied Element Circle
-        pygame.draw.circle(screen, status_color, (right_circle_x, circle_y), 10)  # Status Effect Circle
+        pygame.draw.circle(screen, element_color, (left_circle_x, circle_y), int(10 * self.PROPORTION))  # Applied Element Circle
+        pygame.draw.circle(screen, status_color, (right_circle_x, circle_y), int(10 * self.PROPORTION))  # Status Effect Circle
 
 
     def get_element_color(self):

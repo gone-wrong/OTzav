@@ -5,11 +5,9 @@ from Element import Fire, Earth, Water, Lightning  # Import Element Classes
 
 
 class Player(Character):
-    def __init__(self, health=100, level=1):
-        super().__init__(health, level)
+    def __init__(self, health=100, level=1, PROPORTION=1):
+        super().__init__(health, level, Figure(x=750, y=720, text="Player", PROPORTION=PROPORTION), HealthBar(x=650, y=900, max_health=100, PROPORTION=PROPORTION))
 
-        self.health_bar = HealthBar(x=650, y=900, max_health=self.health)
-        self.figure = Figure(x=750, y=720, text="Player")
 
         # Player-specific elemental abilities as instances of the Element classes
         self.fire = Fire()
@@ -23,14 +21,14 @@ class Player(Character):
 
     def take_damage(self, amount):
         super().take_damage(amount)
-        self.health_bar.update(self.health)
-        self.figure.set_damage_taken(f"-{amount}")
+        # self.health_bar.update(self.health)
+        # self.figure.set_damage_taken(f"-{amount}")
 
 
     def heal(self, amount):
         super().heal(amount)
-        self.health_bar.update(self.health)
-        self.figure.set_status_effect(f"+{amount}", "Bloom")
+        # self.health_bar.update(self.health)
+        # self.figure.set_status_effect(f"+{amount}", "Bloom")
 
 
     def draw(self, screen):

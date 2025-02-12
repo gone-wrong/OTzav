@@ -1,16 +1,15 @@
 from Card import Card
 import random
 
-SCREEN_WIDTH = 1600
-SCREEN_HEIGHT = 960
 
-
-def spawn_cards(ct, player, probabilities):
+def spawn_cards(ct, player, probabilities, PROPORTION):
+    SCREEN_WIDTH = 1600 * PROPORTION
+    SCREEN_HEIGHT = 960 * PROPORTION
 
     cards = []
-    card_width = 100
-    card_height = 150
-    padding = 20
+    card_width = 100  * PROPORTION
+    card_height = 150  * PROPORTION
+    padding = 20  * PROPORTION
     total_row_width = (10 * card_width) + (9 * padding)
     start_x = (SCREEN_WIDTH - total_row_width) // 2
     start_y = (SCREEN_HEIGHT // 2) - ((ct // 10) * card_height / 2) - 10
@@ -38,7 +37,7 @@ def spawn_cards(ct, player, probabilities):
         card_type = random.choices(elements, weights)[0]
         color = element_types[card_type]
 
-        card = Card(card_type, x, y, color, player)
+        card = Card(card_type, x, y, color, player, PROPORTION)
         cards.append(card)
 
     return cards

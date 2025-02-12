@@ -7,24 +7,31 @@ from Button import Button
 from UpgradeMenu import UpgradeMenu
 from Ball import Ball
 
+
 # Pygame setup
 pygame.init()
+display_info = pygame.display.Info()
 SCREEN_WIDTH = 1600
 SCREEN_HEIGHT = 960
-screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+PROPORTION = 1
+if SCREEN_HEIGHT > display_info.current_h:
+    PROPORTION =  display_info.current_h / SCREEN_HEIGHT
+
+
+screen = pygame.display.set_mode((SCREEN_WIDTH * PROPORTION, SCREEN_HEIGHT * PROPORTION))
 clock = pygame.time.Clock()
 running = True
 
 
 # Player and Enemy instances
-player = Player(health=100, level=1)
+player = Player(health=100, level=1, PROPORTION=PROPORTION)
 
 all_enemies = [
-    # [80, 1],
-    # [90, 1],
-    # [85, 1],
-    # [95, 1],
-    # [200, 1]  # Boss enemy (last in list)
+    [80, 1],
+    [90, 1],
+    [85, 1],
+    [95, 1],
+    [200, 1]  # Boss enemy (last in list)
     # Test enemies
     # [5, 1],
     # [15, 1],
@@ -32,21 +39,21 @@ all_enemies = [
     # [20, 1],
     # [50, 1]  # Boss enemy (last in list)
     # Beeffy Test enemies
-    [500, 1],
-    [150, 1],
-    [100, 1],
-    [200, 1],
-    [50, 1]  # Boss enemy (last in list)
+    # [500, 1],
+    # [150, 1],
+    # [100, 1],
+    # [200, 1],
+    # [50, 1]  # Boss enemy (last in list)
 ]
 
 # Instantiate First Set of Enemies
-enemies = [Enemy(*stats) for stats in random.sample(all_enemies[:-1], 4)]  # First 4 randomized enemies
+enemies = [Enemy(*stats, PROPORTION=PROPORTION) for stats in random.sample(all_enemies[:-1], 4)]  # First 4 randomized enemies
 current_enemy = enemies.pop(0)
 
-ball = Ball()
+ball = Ball(PROPORTION)
 
 # Generate cards
-cards = spawn_cards(20, player, player.probabilities)
+cards = spawn_cards(20, player, player.probabilities, PROPORTION)
 
 used_cards = []  # Cards to be removed next turn
 
@@ -68,7 +75,7 @@ def reset_button_action():
     print("Reset Button clicked! Ending turn and refreshing cards.")
 
     # Spawn a new set of 20 cards
-    cards = spawn_cards(20, player, player.probabilities)
+    cards = spawn_cards(20, player, player.probabilities, PROPORTION)
 
     # Reset turn variables
     selected_element = None
@@ -92,6 +99,7 @@ def select_element(element_type):
     selected_cards = 0  # Reset the card counter
     print(f"Element {element_type} selected!")
 
+
 boss_fight = False
 def handle_enemy_defeat():
     global current_enemy, enemies, boss_fight
@@ -102,7 +110,10 @@ def handle_enemy_defeat():
         if boss_fight:
             player.skill_points += 5
 
-            enemies = [Enemy(*stats) for stats in random.sample(all_enemies[:-1], 4)]
+            for stats in all_enemies:
+                stats[1] += 1
+
+            enemies = [Enemy(*stats, PROPORTION=PROPORTION) for stats in random.sample(all_enemies[:-1], 4)]
             current_enemy = enemies.pop(0)
             boss_fight = False
 
@@ -113,7 +124,7 @@ def handle_enemy_defeat():
         else:
             boss_fight = True
             boss_stats = all_enemies[-1]
-            current_enemy = Enemy(*boss_stats)
+            current_enemy = Enemy(*boss_stats, PROPORTION=PROPORTION)
             current_enemy.skip_turn = True
             print(f"Next boss enemy: {current_enemy}")
 
@@ -128,52 +139,67 @@ def enemy_turn():
 
     current_enemy.handle_status_effect(player)
     print("Enemy attacks the player!")
-    player.take_damage(5)
+    player.take_damage(5 * current_enemy.level)
 
 
 # Elemental Buttons
-button_x = 1000
-button_y = 750
-button_width = 50
-button_height = 50
-button_padding = 60
+button_x = 1000 * PROPORTION
+button_y = 750 * PROPORTION
+button_width = 50 * PROPORTION
+button_height = 50 * PROPORTION
+button_padding = 60 * PROPORTION
 
 buttons = [
-    Button(button_x, button_y, button_width, button_height, "F", (200, 100, 100), lambda: select_element("Fire")),
+    Button(button_x, button_y, button_width, button_height, "F", (200, 100, 100), lambda: select_element("Fire"), PROPORTION),
     Button(button_x + button_padding, button_y, button_width, button_height, "E", (100, 200, 100),
-           lambda: select_element("Earth")),
+           lambda: select_element("Earth"), PROPORTION),
     Button(button_x, button_y + button_padding, button_width, button_height, "W", (100, 100, 200),
-           lambda: select_element("Water")),
+           lambda: select_element("Water"), PROPORTION),
     Button(button_x + button_padding, button_y + button_padding, button_width, button_height, "L",
-           (200, 200, 100), lambda: select_element("Lightning")),
+           (200, 200, 100), lambda: select_element("Lightning"), PROPORTION),
 ]
 
-reset_button = Button(1300, 780, 120, 50, "Reset Button", (150, 150, 150), reset_button_action)
+reset_button = Button(1300 * PROPORTION, 780 * PROPORTION, 120 * PROPORTION, 50 * PROPORTION, "Reset Button", (150, 150, 150), reset_button_action, PROPORTION)
 
-upgrade_menu = UpgradeMenu(player)
+upgrade_menu = UpgradeMenu(player, PROPORTION)
+
+background_image = pygame.image.load('bcg.png')
+background_image = pygame.transform.scale(background_image, (int(background_image.get_width() * PROPORTION), int(background_image.get_height() * PROPORTION)))
 
 
 def draw_all():
-    screen.fill("grey")  # Clear screen
+    screen.blit(background_image, (0, 0))  # Draw Background
 
-    upgrade_menu.draw(screen)
-    current_enemy.draw(screen)  # Enemy Health Bar (top)
-    for card in cards:
-        card.draw(screen)  # Cards (middle)
-    player.draw(screen)  # Player Health Bar and Figure
+    if player.health > 0:
+        upgrade_menu.draw(screen)
+        current_enemy.draw(screen)  # Enemy Health Bar (top)
+        for card in cards:
+            card.draw(screen)  # Cards (middle)
+        player.draw(screen)  # Player Health Bar and Figure
 
-    # Draw buttons
-    for button in buttons:
-        button.draw(screen)
-    reset_button.draw(screen)
+        # Draw buttons
+        for button in buttons:
+            button.draw(screen)
+        reset_button.draw(screen)
 
-    ball.draw(screen, selected_element)
+        ball.draw(screen, selected_element)
+    else:
+        # Display Game Over text
+        font = pygame.font.Font(None, int(100 * PROPORTION))  # Scale with screen
+        text_surface = font.render("GAME OVER", True, (255, 50, 50))  # Red text
+        text_rect = text_surface.get_rect(center=(SCREEN_WIDTH * PROPORTION // 2, SCREEN_HEIGHT * PROPORTION // 2))
+        screen.blit(text_surface, text_rect)
 
     pygame.display.flip()
 
 
-# Game loop (for now: Select element with button -> Click 2(for now) cards -> Player attack -> Reset)
+
 while running:
+    if player.health <= 0:
+        draw_all()
+        pygame.time.delay(2000)
+        running = False
+        continue
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -185,6 +211,14 @@ while running:
                     upgrade_menu.hide()
                 else:
                     upgrade_menu.show()
+
+        elif len(cards) < player.max_cards_flipped:
+            draw_all()
+            wait_for = 60
+            while wait_for:
+                wait_for -= 1
+                clock.tick(60)
+            reset_button_action()
 
         elif event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1:  # Left mouse button

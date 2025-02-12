@@ -1,16 +1,16 @@
 import pygame
 
 class HealthBar:
-    def __init__(self, x, y, max_health):
-        self.x = x
-        self.y = y
-        self.width = 300
-        self.height = 20
+    def __init__(self, x, y, max_health, PROPORTION):
+        self.x = x * PROPORTION
+        self.y = y * PROPORTION
+        self.width = 300 * PROPORTION
+        self.height = 20 * PROPORTION
         self.max_health = max_health
         self.current_health = max_health
         self.color = (255, 0, 0)  #Default red
         self.border_color = (255, 255, 255)  #Default white
-        self.font = pygame.font.Font(None, 24)
+        self.font = pygame.font.Font(None, int(24 * PROPORTION))
 
 
     def update(self, new_health):

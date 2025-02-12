@@ -2,16 +2,21 @@ import pygame
 
 
 class Button:
-    def __init__(self, x, y, width, height, text, color=(170, 170, 170), on_click=None):
-        self.rect = pygame.Rect(x, y, width, height)
+    def __init__(self, x, y, width, height, text, color=(170, 170, 170), on_click=None, PROPORTION=1):
+        self.PROPORTION = PROPORTION
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height
+        self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
         self.color = color # Default Grey
         self.text = text
-        self.font = pygame.font.Font(None, 30)
+        self.font = pygame.font.Font(None, int(30 * PROPORTION))
         self.on_click = on_click # On click function
 
 
     def draw(self, screen):
-        pygame.draw.rect(screen, self.color, self.rect, border_radius=8)
+        pygame.draw.rect(screen, self.color, self.rect, border_radius=int(8 * self.PROPORTION))
 
         # Button text
         text_surface = self.font.render(self.text, True, (0, 0, 0))
